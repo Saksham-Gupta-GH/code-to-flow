@@ -39,6 +39,7 @@ Your output MUST be a valid JSON object matching the following structure:
 STRICT RULES:
 - Output ONLY the raw JSON object. Do not include markdown code block wrappers (like ```json).
 - Construct the Mermaid.js graph with correct nodes and links. Make sure all branches and loops are correctly linked back to their parent decisions or loop starts to prevent linear paths.
+- CRITICAL FOR MERMAID SYNTAX: Always wrap ALL node text labels in double quotes inside the node shapes. For example, use A["Start"] instead of A[Start], and B{{"Enter number"}} instead of B{{Enter number}}. This is absolutely required to prevent syntax errors when text contains brackets, braces, parentheses, or semicolons.
 - Ensure the JSON is completely valid and parseable.
 
 CODE:

@@ -1,28 +1,26 @@
 :root {
-  --bg-page: #0d1117;
-  --bg-panel: #161b22;
-  --bg-input: #090c10;
-  --border-color: #30363d;
-  --border-color-hover: #8b949e;
+  --bg-page: #06090e;
+  --bg-panel: #0b0f17;
+  --bg-input: #020406;
   
-  --text-main: #c9d1d9;
-  --text-bright: #f0f6fc;
-  --text-muted: #8b949e;
-  --text-soft: #484f58;
+  /* Phosphor Retro Green Theme */
+  --retro-green: #33ff33;
+  --retro-green-dim: #00aa22;
+  --retro-green-dark: #003300;
+  --retro-green-glow: rgba(51, 255, 51, 0.2);
+  --retro-green-glow-strong: rgba(51, 255, 51, 0.4);
   
-  --accent: #58a6ff;
-  --accent-hover: #79c0ff;
-  --accent-bg: #1f6feb;
-  --accent-bg-hover: #388bfd;
+  --text-main: #8cff8c;
+  --text-bright: #33ff33;
+  --text-muted: #00aa22;
+  --text-soft: #005511;
   
-  --success: #3fb950;
-  --danger: #f85149;
+  --success: #33ff33;
+  --danger: #ff3333;
   
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
-  
-  --border-radius: 6px;
-  --transition: 0.15s ease-in-out;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  --border-radius: 2px; /* Rigid, retro sharp corners */
+  --transition: 0.1s ease-in-out;
 }
 
 * {
@@ -32,62 +30,92 @@
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   background-color: var(--bg-page);
   color: var(--text-main);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  text-shadow: 0 0 2px var(--retro-green-glow);
 }
 
-/* Elegant Minimal Header */
+/* CRT Screen Scanline Overlay Effect */
+body::after {
+  content: "";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+  background-size: 100% 4px;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+/* Retro CRT Glow Vignette */
+body::before {
+  content: "";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.8) 100%);
+  z-index: 99998;
+  pointer-events: none;
+}
+
+/* Retro Header */
 .header {
   padding: 1.25rem 2.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 2px solid var(--retro-green);
   background: var(--bg-panel);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header-logo-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: 0 0 10px var(--retro-green-glow);
 }
 
 .header h1 {
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-size: 1.6rem;
+  font-weight: 700;
   color: var(--text-bright);
+  text-shadow: 0 0 8px var(--retro-green-glow-strong);
+  letter-spacing: 0.05em;
+}
+
+.header h1::before {
+  content: "> ";
 }
 
 .header .tagline {
   font-size: 0.85rem;
   color: var(--text-muted);
+  letter-spacing: 0.02em;
 }
 
-/* Clean Side-by-Side Grid Layout */
+/* Retro Main Layout Grid */
 .main {
   flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  gap: 1.5rem;
+  gap: 1.75rem;
   padding: 2rem 2.5rem;
-  max-width: 1500px;
+  max-width: 1600px;
   width: 100%;
   margin: 0 auto;
+  z-index: 1;
 }
 
-/* Panels */
+/* Retro Terminal Panel */
 .panel {
   background: var(--bg-panel);
-  border: 1px solid var(--border-color);
+  border: 2px solid var(--retro-green);
   border-radius: var(--border-radius);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 0 8px var(--retro-green-glow);
 }
 
 .panel h2 {
@@ -95,11 +123,15 @@ body {
   font-weight: 600;
   margin-bottom: 1rem;
   color: var(--text-bright);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 4px var(--retro-green-glow);
 }
 
-/* Code Editor Input */
+.panel h2::before {
+  content: ":: ";
+}
+
+/* Retro Editor Textarea */
 textarea#code-input {
   width: 100%;
   flex: 1;
@@ -108,24 +140,26 @@ textarea#code-input {
   background: var(--bg-input);
   color: var(--text-bright);
   border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--retro-green-dim);
   padding: 1rem;
   font-family: var(--font-mono);
   font-size: 0.85rem;
   line-height: 1.6;
   outline: none;
-  transition: border-color var(--transition);
+  transition: all var(--transition);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
 }
 
 textarea#code-input:focus {
-  border-color: var(--accent);
+  border-color: var(--retro-green);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8), 0 0 6px var(--retro-green-glow);
 }
 
 textarea#code-input::placeholder {
   color: var(--text-soft);
 }
 
-/* Control Row */
+/* Controls */
 .controls {
   margin-top: 1rem;
   display: flex;
@@ -134,24 +168,39 @@ textarea#code-input::placeholder {
 }
 
 button#generate-btn {
-  padding: 0.55rem 1.25rem;
+  padding: 0.6rem 1.4rem;
   border-radius: var(--border-radius);
-  border: 1px solid rgba(240, 246, 252, 0.1);
-  background: var(--accent-bg);
-  color: #ffffff;
-  font-weight: 500;
+  border: 1px solid var(--retro-green);
+  background: var(--retro-green-dark);
+  color: var(--retro-green);
+  font-family: var(--font-mono);
+  font-weight: 600;
   cursor: pointer;
   font-size: 0.88rem;
-  transition: background var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all var(--transition);
+  box-shadow: 0 0 5px var(--retro-green-glow);
 }
 
 button#generate-btn:hover:not(:disabled) {
-  background: var(--accent-bg-hover);
+  background: var(--retro-green);
+  color: var(--bg-page);
+  box-shadow: 0 0 10px var(--retro-green-glow-strong);
+  text-shadow: none;
+}
+
+button#generate-btn:active:not(:disabled) {
+  filter: brightness(0.8);
 }
 
 button#generate-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
+  border-color: var(--text-soft);
+  color: var(--text-soft);
+  background: transparent;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .status {
@@ -159,8 +208,16 @@ button#generate-btn:disabled {
   color: var(--text-muted);
 }
 
+.status::before {
+  content: "[ STATUS: ";
+}
+.status::after {
+  content: " ]";
+}
+
 .status.error {
   color: var(--danger);
+  text-shadow: 0 0 4px rgba(255, 51, 51, 0.4);
 }
 
 .note {
@@ -169,34 +226,40 @@ button#generate-btn:disabled {
   color: var(--text-soft);
 }
 
-/* Elegant Vercel-like Flat Tabs */
+/* Terminal Tab System */
 .tabs-header {
   display: flex;
-  border-bottom: 1px solid var(--border-color);
-  gap: 1.5rem;
+  border-bottom: 2px solid var(--retro-green);
+  gap: 0.5rem;
   margin-bottom: 1.25rem;
+  padding-bottom: 0.25rem;
 }
 
 .tab-btn {
-  padding: 0.5rem 0;
+  padding: 0.4rem 1rem;
   background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text-muted);
-  font-family: var(--font-sans);
-  font-size: 0.88rem;
-  font-weight: 500;
+  border: 1px solid var(--retro-green-dim);
+  border-radius: var(--border-radius);
+  color: var(--retro-green-dim);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition);
 }
 
 .tab-btn:hover {
   color: var(--text-bright);
+  border-color: var(--retro-green);
+  background: rgba(51, 255, 51, 0.05);
 }
 
 .tab-btn.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
+  color: var(--bg-page);
+  background: var(--retro-green);
+  border-color: var(--retro-green);
+  text-shadow: none;
+  box-shadow: 0 0 8px var(--retro-green-glow);
 }
 
 .tabs-content {
@@ -215,7 +278,7 @@ button#generate-btn:disabled {
   display: flex;
 }
 
-/* Compact Flat Actions Row */
+/* Action Controls */
 .actions-row {
   display: flex;
   gap: 0.5rem;
@@ -223,11 +286,12 @@ button#generate-btn:disabled {
 }
 
 .action-btn {
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 0.8rem;
   border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--retro-green-dim);
   background: var(--bg-input);
-  color: var(--text-muted);
+  color: var(--retro-green-dim);
+  font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -235,32 +299,37 @@ button#generate-btn:disabled {
 }
 
 .action-btn:hover:not(:disabled) {
-  border-color: var(--border-color-hover);
+  border-color: var(--retro-green);
   color: var(--text-bright);
+  box-shadow: 0 0 5px var(--retro-green-glow);
 }
 
 .action-btn:disabled {
-  opacity: 0.35;
+  opacity: 0.3;
+  border-color: var(--text-soft);
+  color: var(--text-soft);
   cursor: not-allowed;
 }
 
 .action-btn.success {
   border-color: var(--success);
   color: var(--success);
+  box-shadow: 0 0 5px var(--retro-green-glow);
 }
 
-/* Diagram Viewport & Mermaid Rendering */
+/* Diagram Viewport & Green Retro Flowcharts */
 .mermaid-viewport {
   flex: 1;
   min-height: 480px;
   background: var(--bg-input);
   border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--retro-green-dim);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: auto;
   padding: 1.5rem;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
 }
 
 #mermaid-container {
@@ -276,26 +345,26 @@ button#generate-btn:disabled {
   height: auto;
 }
 
-/* Custom Mermaid SVG Nodes Restyling */
+/* Pure Phosphor Green Mermaid Override */
 #mermaid-container svg .node rect,
 #mermaid-container svg .node circle,
 #mermaid-container svg .node polygon,
 #mermaid-container svg .node path {
-  fill: #161b22 !important;
-  stroke: #30363d !important;
-  stroke-width: 1.2px !important;
+  fill: #06090e !important;
+  stroke: var(--retro-green) !important;
+  stroke-width: 1.5px !important;
+  filter: drop-shadow(0 0 1.5px var(--retro-green-glow)) !important;
 }
 
 #mermaid-container svg .node .label {
-  color: var(--text-bright) !important;
-  font-family: var(--font-sans) !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
+  color: var(--retro-green) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
 }
 
 #mermaid-container svg .edgePath .path {
-  stroke: #8b949e !important;
-  stroke-width: 1.2px !important;
+  stroke: var(--retro-green) !important;
+  stroke-width: 1.5px !important;
 }
 
 #mermaid-container svg .edgeLabel rect {
@@ -303,57 +372,58 @@ button#generate-btn:disabled {
 }
 
 #mermaid-container svg .edgeLabel span {
-  color: var(--text-muted) !important;
-  font-family: var(--font-sans) !important;
+  color: var(--retro-green-dim) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
 }
 
-/* Outputs (ASCII & Steps) */
+/* Pre Output Elements */
 .ascii-output,
 .steps-output {
   flex: 1;
   background: var(--bg-input);
   border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--retro-green-dim);
   padding: 1rem;
   min-height: 480px;
   white-space: pre;
   overflow: auto;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.6;
   color: var(--text-main);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
 }
 
 .raw-mermaid-fallback {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--retro-green-dark);
   padding: 0.75rem;
   margin-top: 0.75rem;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   text-align: left;
   white-space: pre-wrap;
   word-break: break-all;
 }
 
-/* Loaders & States */
+/* States & Spinner */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--text-soft);
+  color: var(--text-muted);
   text-align: center;
   padding: 2rem;
   height: 100%;
 }
 
-.empty-state-icon {
-  font-size: 1.8rem;
-  margin-bottom: 0.5rem;
-  opacity: 0.6;
+.empty-state-text {
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
 }
 
 .loading-state {
@@ -361,7 +431,7 @@ button#generate-btn:disabled {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
+  color: var(--text-bright);
   gap: 1rem;
   height: 100%;
 }
@@ -369,24 +439,32 @@ button#generate-btn:disabled {
 .spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid rgba(88, 166, 255, 0.15);
-  border-top-color: var(--accent);
+  border: 2px solid var(--retro-green-dark);
+  border-top-color: var(--retro-green);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 4px var(--retro-green-glow);
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Elegant Minimal Footer */
+.error-text {
+  color: var(--danger) !important;
+  text-shadow: 0 0 4px rgba(255, 51, 51, 0.4);
+}
+
+/* Retro Footer */
 .footer {
-  padding: 1rem 2.5rem;
-  border-top: 1px solid var(--border-color);
+  padding: 1.25rem 2.5rem;
+  border-top: 2px solid var(--retro-green);
   background: var(--bg-panel);
   font-size: 0.78rem;
-  color: var(--text-soft);
+  color: var(--text-muted);
   text-align: center;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 10px var(--retro-green-glow);
 }
 
 /* Responsive */

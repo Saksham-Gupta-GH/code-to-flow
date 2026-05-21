@@ -57,7 +57,7 @@
     mermaidContainer.innerHTML = `
       <div class="loading-state">
         <div class="spinner"></div>
-        <p>Drawing your interactive flowchart...</p>
+        <p>[ LOADING: Drawing flowchart... ]</p>
       </div>
     `;
 
@@ -78,8 +78,7 @@
         statusEl.classList.add('error');
         mermaidContainer.innerHTML = `
           <div class="empty-state">
-            <div class="empty-state-icon">⚠️</div>
-            <p>Generation failed: ${message}</p>
+            <p class="error-text">[ ERROR: Generation failed - ${message} ]</p>
           </div>
         `;
         return;
@@ -89,7 +88,7 @@
       if (data.ascii) {
         asciiOutput.textContent = data.ascii;
       } else {
-        asciiOutput.innerHTML = `<div class="empty-state"><p>No ASCII flowchart generated.</p></div>`;
+        asciiOutput.innerHTML = `<div class="empty-state"><p>[ ERROR: No ASCII flowchart generated ]</p></div>`;
       }
 
       // 2. Render JSON Steps
@@ -114,7 +113,7 @@
           console.error("Mermaid Render Error:", renderError);
           mermaidContainer.innerHTML = `
             <div class="error-state">
-              <div class="empty-state-icon">⚠️</div>
+              <p class="error-text">[ ERROR: Render Failed ]</p>
               <p>Could not render graphical diagram. Raw Mermaid code is copyable.</p>
               <pre class="raw-mermaid-fallback">${escapeHtml(mermaidCode)}</pre>
             </div>
@@ -123,8 +122,7 @@
       } else {
         mermaidContainer.innerHTML = `
           <div class="empty-state">
-            <div class="empty-state-icon">📊</div>
-            <p>No visual diagram returned.</p>
+            <p>[ ERROR: No visual diagram returned ]</p>
           </div>
         `;
       }
@@ -136,8 +134,7 @@
       statusEl.classList.add('error');
       mermaidContainer.innerHTML = `
         <div class="empty-state">
-          <div class="empty-state-icon">⚠️</div>
-          <p>Unexpected communication error occurred.</p>
+          <p class="error-text">[ ERROR: Unexpected communication failure ]</p>
         </div>
       `;
     } finally {

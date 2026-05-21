@@ -45,9 +45,9 @@
 
       <section class="panel output-panel">
         <div class="tabs-header">
-          <button class="tab-btn active" data-tab="visual">📊 Visual Diagram</button>
-          <button class="tab-btn" data-tab="ascii">⌨️ ASCII Diagram</button>
-          <button class="tab-btn" data-tab="steps">📋 Steps List</button>
+          <button class="tab-btn active" data-tab="visual">[ VISUAL DIAGRAM ]</button>
+          <button class="tab-btn" data-tab="ascii">[ ASCII DIAGRAM ]</button>
+          <button class="tab-btn" data-tab="steps">[ STEPS LIST ]</button>
         </div>
 
         <div class="tabs-content">
@@ -60,8 +60,7 @@
             <div class="mermaid-viewport">
               <div id="mermaid-container">
                 <div class="empty-state">
-                  <div class="empty-state-icon">📊</div>
-                  <p>Your interactive visual flowchart will render here.</p>
+                  <p class="empty-state-text">> Awaiting code input...</p>
                 </div>
               </div>
             </div>
@@ -69,12 +68,12 @@
 
           <!-- ASCII Tab -->
           <div id="tab-ascii" class="tab-content">
-            <pre id="ascii-output" class="ascii-output"><div class="empty-state"><div class="empty-state-icon">⌨️</div><p>ASCII flowchart will render here.</p></div></pre>
+            <pre id="ascii-output" class="ascii-output"><div class="empty-state"><p class="empty-state-text">> Awaiting code input...</p></div></pre>
           </div>
 
           <!-- Steps Tab -->
           <div id="tab-steps" class="tab-content">
-            <pre id="steps-output" class="steps-output"><div class="empty-state"><div class="empty-state-icon">📋</div><p>Normalized steps will render here.</p></div></pre>
+            <pre id="steps-output" class="steps-output"><div class="empty-state"><p class="empty-state-text">> Awaiting code input...</p></div></pre>
           </div>
         </div>
       </section>
