@@ -1,25 +1,34 @@
 :root {
-  --bg-page: #06090e;
-  --bg-panel: #0b0f17;
-  --bg-input: #020406;
+  --bg-page: #0c0414; /* Deep synthwave dark space */
+  --bg-panel: #16082b; /* Deep indigo arcade cabinet frame */
+  --bg-input: #07010f; /* Void black screen inside cabinet */
   
-  /* Phosphor Retro Green Theme */
-  --retro-green: #33ff33;
-  --retro-green-dim: #00aa22;
-  --retro-green-dark: #003300;
-  --retro-green-glow: rgba(51, 255, 51, 0.2);
-  --retro-green-glow-strong: rgba(51, 255, 51, 0.4);
+  /* Retro Arcade Neon Theme */
+  --retro-cyan: #00f0ff;
+  --retro-magenta: #ff007f;
+  --retro-yellow: #fffb00;
+  --retro-purple: #9a00ff;
   
-  --text-main: #8cff8c;
-  --text-bright: #33ff33;
-  --text-muted: #00aa22;
-  --text-soft: #005511;
+  --cyan-glow: rgba(0, 240, 255, 0.3);
+  --magenta-glow: rgba(255, 0, 127, 0.3);
+  --yellow-glow: rgba(255, 251, 0, 0.3);
+  --purple-glow: rgba(154, 0, 255, 0.2);
   
-  --success: #33ff33;
-  --danger: #ff3333;
+  --text-main: #cebee6;
+  --text-bright: #00f0ff;
+  --text-magenta: #ff007f;
+  --text-yellow: #fffb00;
+  --text-muted: #8b6ca8;
+  --text-soft: #4a3666;
   
+  --success: #00ff66;
+  --danger: #ff0055;
+  
+  --font-game: 'Press Start 2P', monospace;
+  --font-pixel: 'VT323', monospace;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
-  --border-radius: 2px; /* Rigid, retro sharp corners */
+  
+  --border-radius: 0px; /* Sharp 8-bit game pixel styling */
   --transition: 0.1s ease-in-out;
 }
 
@@ -30,15 +39,19 @@
 }
 
 body {
-  font-family: var(--font-mono);
+  font-family: var(--font-pixel);
   background-color: var(--bg-page);
+  background-image: 
+    linear-gradient(rgba(154, 0, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 0, 255, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
   color: var(--text-main);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   -webkit-font-smoothing: antialiased;
   position: relative;
-  text-shadow: 0 0 2px var(--retro-green-glow);
+  text-shadow: 0 0 2px var(--cyan-glow);
 }
 
 /* CRT Screen Scanline Overlay Effect */
@@ -47,51 +60,83 @@ body::after {
   display: block;
   position: fixed;
   top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
   background-size: 100% 4px;
   z-index: 99999;
   pointer-events: none;
-  opacity: 0.35;
+  opacity: 0.4;
 }
 
-/* Retro CRT Glow Vignette */
+/* Retro CRT Glow Vignette + Cyber Gradient */
 body::before {
   content: "";
   display: block;
   position: fixed;
   top: 0; left: 0; bottom: 0; right: 0;
-  background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.8) 100%);
+  background: 
+    radial-gradient(circle, transparent 65%, rgba(12, 4, 20, 0.85) 100%),
+    linear-gradient(180deg, rgba(255, 0, 127, 0.04) 0%, transparent 35%, rgba(0, 240, 255, 0.04) 100%);
   z-index: 99998;
   pointer-events: none;
 }
 
-/* Retro Header */
+/* Retro Arcade Header */
 .header {
-  padding: 1.25rem 2.5rem;
-  border-bottom: 2px solid var(--retro-green);
+  padding: 1.5rem 2.5rem;
+  border-bottom: 4px solid var(--retro-magenta);
   background: var(--bg-panel);
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  box-shadow: 0 0 10px var(--retro-green-glow);
+  gap: 0.5rem;
+  box-shadow: 0 4px 0 var(--retro-purple), 0 0 15px var(--magenta-glow);
+  position: relative;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--retro-magenta), var(--retro-cyan), var(--retro-yellow));
+}
+
+.header-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-glowing-dot {
+  width: 12px;
+  height: 12px;
+  background-color: var(--retro-cyan);
+  box-shadow: 0 0 10px var(--retro-cyan);
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.4; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1.2); }
 }
 
 .header h1 {
-  font-size: 1.6rem;
+  font-family: var(--font-game);
+  font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-bright);
-  text-shadow: 0 0 8px var(--retro-green-glow-strong);
+  color: #fff;
+  text-shadow: 3px 3px 0 var(--retro-magenta), -1px -1px 0 var(--retro-cyan);
   letter-spacing: 0.05em;
-}
-
-.header h1::before {
-  content: "> ";
+  text-transform: uppercase;
 }
 
 .header .tagline {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  font-family: var(--font-pixel);
+  font-size: 1.25rem;
+  color: var(--text-main);
   letter-spacing: 0.02em;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 /* Retro Main Layout Grid */
@@ -99,36 +144,47 @@ body::before {
   flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  gap: 1.75rem;
-  padding: 2rem 2.5rem;
+  gap: 2rem;
+  padding: 2.5rem;
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
   z-index: 1;
 }
 
-/* Retro Terminal Panel */
+/* Retro Arcade Cabinet Panel */
 .panel {
   background: var(--bg-panel);
-  border: 2px solid var(--retro-green);
   border-radius: var(--border-radius);
-  padding: 1.5rem;
+  padding: 1.75rem;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 8px var(--retro-green-glow);
+  position: relative;
+}
+
+.input-panel {
+  border: 4px solid var(--retro-cyan);
+  box-shadow: 4px 4px 0 var(--retro-purple), 0 0 15px var(--cyan-glow);
+}
+
+.output-panel {
+  border: 4px solid var(--retro-magenta);
+  box-shadow: 4px 4px 0 var(--retro-purple), 0 0 15px var(--magenta-glow);
 }
 
 .panel h2 {
-  font-size: 0.95rem;
+  font-family: var(--font-game);
+  font-size: 0.75rem;
   font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--text-bright);
-  letter-spacing: 0.1em;
-  text-shadow: 0 0 4px var(--retro-green-glow);
+  margin-bottom: 1.25rem;
+  color: var(--text-yellow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .panel h2::before {
-  content: ":: ";
+  content: "🕹️ ";
 }
 
 /* Retro Editor Textarea */
@@ -138,21 +194,21 @@ textarea#code-input {
   min-height: 480px;
   resize: vertical;
   background: var(--bg-input);
-  color: var(--text-bright);
+  color: #fff;
   border-radius: var(--border-radius);
-  border: 1px solid var(--retro-green-dim);
-  padding: 1rem;
+  border: 2px solid var(--retro-purple);
+  padding: 1.25rem;
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   line-height: 1.6;
   outline: none;
   transition: all var(--transition);
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95);
 }
 
 textarea#code-input:focus {
-  border-color: var(--retro-green);
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8), 0 0 6px var(--retro-green-glow);
+  border-color: var(--retro-cyan);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.95), 0 0 8px var(--cyan-glow);
 }
 
 textarea#code-input::placeholder {
@@ -161,105 +217,114 @@ textarea#code-input::placeholder {
 
 /* Controls */
 .controls {
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
+/* 3D Physical Push-down Arcade Button */
 button#generate-btn {
-  padding: 0.6rem 1.4rem;
+  padding: 0.75rem 1.75rem;
   border-radius: var(--border-radius);
-  border: 1px solid var(--retro-green);
-  background: var(--retro-green-dark);
-  color: var(--retro-green);
-  font-family: var(--font-mono);
-  font-weight: 600;
+  border: none;
+  background: var(--retro-cyan);
+  color: #000;
+  border-bottom: 5px solid #009eb7;
+  font-family: var(--font-game);
+  font-size: 0.68rem;
+  font-weight: 900;
   cursor: pointer;
-  font-size: 0.88rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: all var(--transition);
-  box-shadow: 0 0 5px var(--retro-green-glow);
+  transition: all 0.05s ease-in-out;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.4), 0 0 10px var(--cyan-glow);
 }
 
 button#generate-btn:hover:not(:disabled) {
-  background: var(--retro-green);
-  color: var(--bg-page);
-  box-shadow: 0 0 10px var(--retro-green-glow-strong);
-  text-shadow: none;
+  background: #2ef3ff;
+  transform: translateY(1px);
+  border-bottom-width: 4px;
 }
 
 button#generate-btn:active:not(:disabled) {
-  filter: brightness(0.8);
+  transform: translateY(4px);
+  border-bottom-width: 1px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4), 0 0 5px var(--cyan-glow);
 }
 
 button#generate-btn:disabled {
-  opacity: 0.4;
-  border-color: var(--text-soft);
-  color: var(--text-soft);
-  background: transparent;
+  opacity: 0.35;
+  background: var(--text-soft);
+  border-bottom-color: #1e1330;
+  color: var(--text-muted);
   cursor: not-allowed;
+  transform: none;
   box-shadow: none;
 }
 
 .status {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  font-family: var(--font-game);
+  font-size: 0.55rem;
+  color: var(--text-bright);
 }
 
 .status::before {
-  content: "[ STATUS: ";
-}
-.status::after {
-  content: " ]";
+  content: "SYS: ";
 }
 
 .status.error {
   color: var(--danger);
-  text-shadow: 0 0 4px rgba(255, 51, 51, 0.4);
+  text-shadow: 0 0 4px rgba(255, 0, 85, 0.5);
 }
 
 .note {
-  margin-top: 0.75rem;
-  font-size: 0.78rem;
+  margin-top: 1rem;
+  font-family: var(--font-pixel);
+  font-size: 1.1rem;
   color: var(--text-soft);
 }
 
 /* Terminal Tab System */
 .tabs-header {
   display: flex;
-  border-bottom: 2px solid var(--retro-green);
+  border-bottom: 3px solid var(--retro-magenta);
   gap: 0.5rem;
   margin-bottom: 1.25rem;
-  padding-bottom: 0.25rem;
+  padding-bottom: 0.5rem;
 }
 
 .tab-btn {
-  padding: 0.4rem 1rem;
+  padding: 0.5rem 1.25rem;
   background: transparent;
-  border: 1px solid var(--retro-green-dim);
+  border: 2px solid var(--retro-purple);
   border-radius: var(--border-radius);
-  color: var(--retro-green-dim);
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-family: var(--font-game);
+  font-size: 0.55rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.05s ease-in-out;
+  border-bottom-width: 4px;
 }
 
 .tab-btn:hover {
-  color: var(--text-bright);
-  border-color: var(--retro-green);
-  background: rgba(51, 255, 51, 0.05);
+  color: #fff;
+  border-color: var(--retro-magenta);
 }
 
 .tab-btn.active {
-  color: var(--bg-page);
-  background: var(--retro-green);
-  border-color: var(--retro-green);
-  text-shadow: none;
-  box-shadow: 0 0 8px var(--retro-green-glow);
+  color: #fff;
+  background: var(--retro-magenta);
+  border-color: var(--retro-magenta);
+  border-bottom: 4px solid #a3004f;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 10px var(--magenta-glow);
+}
+
+.tab-btn.active:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 
 .tabs-content {
@@ -286,50 +351,58 @@ button#generate-btn:disabled {
 }
 
 .action-btn {
-  padding: 0.35rem 0.8rem;
+  padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
-  border: 1px solid var(--retro-green-dim);
+  border: 2px solid var(--retro-purple);
   background: var(--bg-input);
-  color: var(--retro-green-dim);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
+  color: var(--text-bright);
+  font-family: var(--font-game);
+  font-size: 0.5rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition);
+  border-bottom-width: 4px;
+  transition: all 0.05s ease-in-out;
 }
 
 .action-btn:hover:not(:disabled) {
-  border-color: var(--retro-green);
-  color: var(--text-bright);
-  box-shadow: 0 0 5px var(--retro-green-glow);
+  border-color: var(--retro-cyan);
+  color: #fff;
+}
+
+.action-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 
 .action-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.25;
   border-color: var(--text-soft);
   color: var(--text-soft);
   cursor: not-allowed;
+  border-bottom-width: 2px;
+  transform: none;
 }
 
 .action-btn.success {
   border-color: var(--success);
   color: var(--success);
-  box-shadow: 0 0 5px var(--retro-green-glow);
+  box-shadow: 0 0 5px rgba(0, 255, 102, 0.3);
 }
 
-/* Diagram Viewport & Green Retro Flowcharts */
+/* Diagram Viewport & Synthwave Arcade Flowcharts */
 .mermaid-viewport {
   flex: 1;
   min-height: 480px;
   background: var(--bg-input);
   border-radius: var(--border-radius);
-  border: 1px solid var(--retro-green-dim);
+  border: 2px solid var(--retro-magenta);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: auto;
   padding: 1.5rem;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.95);
+  position: relative;
 }
 
 #mermaid-container {
@@ -345,36 +418,55 @@ button#generate-btn:disabled {
   height: auto;
 }
 
-/* Pure Phosphor Green Mermaid Override */
+/* Cyber Synthwave Mermaid Color Scheme Override */
 #mermaid-container svg .node rect,
 #mermaid-container svg .node circle,
 #mermaid-container svg .node polygon,
 #mermaid-container svg .node path {
-  fill: #06090e !important;
-  stroke: var(--retro-green) !important;
-  stroke-width: 1.5px !important;
-  filter: drop-shadow(0 0 1.5px var(--retro-green-glow)) !important;
+  fill: #16082b !important;
+  stroke: var(--retro-cyan) !important;
+  stroke-width: 2.5px !important;
+  filter: drop-shadow(0 0 3px var(--cyan-glow)) !important;
+}
+
+/* Highlight diamond/decision nodes in glowing retro yellow */
+#mermaid-container svg .node.decision rect,
+#mermaid-container svg .node.decision polygon,
+#mermaid-container svg .node.decision path,
+#mermaid-container svg .node[id^="M"] polygon, 
+#mermaid-container svg .node[id^="Q"] polygon {
+  stroke: var(--retro-yellow) !important;
+  filter: drop-shadow(0 0 3px var(--yellow-glow)) !important;
 }
 
 #mermaid-container svg .node .label {
-  color: var(--retro-green) !important;
-  font-family: var(--font-mono) !important;
-  font-size: 11px !important;
+  color: #fff !important;
+  font-family: var(--font-pixel) !important;
+  font-size: 14px !important;
+  text-shadow: 1px 1px 0 #000 !important;
 }
 
 #mermaid-container svg .edgePath .path {
-  stroke: var(--retro-green) !important;
-  stroke-width: 1.5px !important;
+  stroke: var(--retro-magenta) !important;
+  stroke-width: 2.5px !important;
+  filter: drop-shadow(0 0 2px var(--magenta-glow)) !important;
+}
+
+#mermaid-container svg .marker {
+  fill: var(--retro-magenta) !important;
+  stroke: none !important;
 }
 
 #mermaid-container svg .edgeLabel rect {
   fill: var(--bg-input) !important;
+  stroke: var(--retro-purple) !important;
+  stroke-width: 1px !important;
 }
 
 #mermaid-container svg .edgeLabel span {
-  color: var(--retro-green-dim) !important;
-  font-family: var(--font-mono) !important;
-  font-size: 10px !important;
+  color: var(--retro-yellow) !important;
+  font-family: var(--font-pixel) !important;
+  font-size: 12px !important;
 }
 
 /* Pre Output Elements */
@@ -383,22 +475,23 @@ button#generate-btn:disabled {
   flex: 1;
   background: var(--bg-input);
   border-radius: var(--border-radius);
-  border: 1px solid var(--retro-green-dim);
-  padding: 1rem;
+  border: 2px solid var(--retro-magenta);
+  padding: 1.25rem;
   min-height: 480px;
   white-space: pre;
   overflow: auto;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  line-height: 1.6;
-  color: var(--text-main);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
+  font-family: var(--font-pixel);
+  font-size: 1.35rem;
+  line-height: 1.5;
+  color: #fff;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.95);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
 }
 
 .raw-mermaid-fallback {
   background: rgba(0, 0, 0, 0.4);
   border-radius: var(--border-radius);
-  border: 1px solid var(--retro-green-dark);
+  border: 2px solid var(--retro-purple);
   padding: 0.75rem;
   margin-top: 0.75rem;
   font-family: var(--font-mono);
@@ -419,11 +512,17 @@ button#generate-btn:disabled {
   text-align: center;
   padding: 2rem;
   height: 100%;
+  font-family: var(--font-game);
+  font-size: 0.55rem;
+  line-height: 1.8;
 }
 
 .empty-state-text {
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
+  animation: blink 1.2s infinite steps(2);
+}
+
+@keyframes blink {
+  to { opacity: 0.3; }
 }
 
 .loading-state {
@@ -431,56 +530,65 @@ button#generate-btn:disabled {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--text-bright);
-  gap: 1rem;
+  color: var(--retro-magenta);
+  gap: 1.5rem;
   height: 100%;
+  font-family: var(--font-game);
+  font-size: 0.65rem;
+  text-shadow: 2px 2px 0 #000;
 }
 
+/* Retro Jumping/Rotating Block Spinner */
 .spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--retro-green-dark);
-  border-top-color: var(--retro-green);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  box-shadow: 0 0 4px var(--retro-green-glow);
+  width: 32px;
+  height: 32px;
+  background: var(--retro-yellow);
+  box-shadow: 0 0 10px var(--yellow-glow);
+  animation: jump 0.8s steps(4) infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes jump {
+  0% { transform: scale(1) rotate(0deg); background: var(--retro-yellow); }
+  50% { transform: scale(1.2) rotate(90deg); background: var(--retro-magenta); }
+  100% { transform: scale(1) rotate(180deg); background: var(--retro-cyan); }
 }
 
 .error-text {
   color: var(--danger) !important;
-  text-shadow: 0 0 4px rgba(255, 51, 51, 0.4);
+  text-shadow: 0 0 4px rgba(255, 0, 85, 0.5);
 }
 
-/* Retro Footer */
+/* Retro Arcade Footer */
 .footer {
-  padding: 1.25rem 2.5rem;
-  border-top: 2px solid var(--retro-green);
+  padding: 1.5rem 2.5rem;
+  border-top: 4px solid var(--retro-cyan);
   background: var(--bg-panel);
-  font-size: 0.78rem;
+  font-family: var(--font-pixel);
+  font-size: 1.15rem;
   color: var(--text-muted);
   text-align: center;
   letter-spacing: 0.02em;
-  box-shadow: 0 0 10px var(--retro-green-glow);
+  box-shadow: 0 -4px 0 var(--retro-purple), 0 0 15px var(--cyan-glow);
 }
 
-/* Responsive */
+.footer span::before {
+  content: "🕹️ ";
+}
+
+/* Responsive Layout */
 @media (max-width: 1024px) {
   .main {
     grid-template-columns: 1fr;
-    padding: 1.25rem;
-    gap: 1.25rem;
+    padding: 1.5rem;
+    gap: 1.5rem;
   }
 
   .header {
-    padding: 1rem 1.25rem;
+    padding: 1.25rem 1.5rem;
   }
 
   .footer {
-    padding: 1rem;
+    padding: 1.25rem;
   }
   
   textarea#code-input,
