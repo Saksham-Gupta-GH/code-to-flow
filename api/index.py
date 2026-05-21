@@ -321,6 +321,80 @@ def index() -> str:
     return render_template("index.html")
 
 
+def sanitize_mermaid_code(code: str) -> str:
+    if not code:
+        return ""
+    
+    code = code.strip()
+    
+    # 1. Strip out markdown wrappers if Gemini returned them
+    if code.startswith("```"):
+        lines = code.split("\n")
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].startswith("```"):
+            lines = lines[:-1]
+        code = "\n".join(lines).strip()
+        
+    # 2. Automatically wrap unquoted text in shape definitions in double quotes.
+    # We restrict matches to actual Mermaid node definitions by enforcing a prefix requirement.
+    # The prefix ensures the node ID appears at the start of a line, after a semicolon, or after a link connector.
+    PREFIX = r"(?P<prefix>^\s*|;\s*|(?:\s*(?:-->|==>|-.->|---|==)\s*|\s*--\s*[^\n-]+?\s*-->\s*|\s*-\.-\s*[^\n-.]+?\s*-.->\s*))"
+
+    # Hexagon shape: A{{text}} -> A{{"text"}}
+    code = re.sub(
+        PREFIX + r"(?P<id>[A-Za-z0-9_-]+)\{\{(?P<label>[^\"{}\n][^{}\n]*)\}\}",
+        lambda m: m.group("prefix") + m.group("id") + "{{\"" + m.group("label") + "\"}}",
+        code, flags=re.MULTILINE
+    )
+    
+    # Diamond shape: A{text} -> A{"text"}
+    code = re.sub(
+        PREFIX + r"(?P<id>[A-Za-z0-9_-]+)\{(?P<label>[^\"{}\n][^{}\n]*)\}",
+        lambda m: m.group("prefix") + m.group("id") + "{\"" + m.group("label") + "\"}",
+        code, flags=re.MULTILINE
+    )
+    
+    # Stadium shape: A([text]) -> A(["text"])
+    code = re.sub(
+        PREFIX + r"(?P<id>[A-Za-z0-9_-]+)\(\[(?P<label>[^\"\[\]\n][^\[\]\n]*)\]\)",
+        lambda m: m.group("prefix") + m.group("id") + "([\"" + m.group("label") + "\"])",
+        code, flags=re.MULTILINE
+    )
+    
+    # Circle shape: A((text)) -> A(("text"))
+    code = re.sub(
+        PREFIX + r"(?P<id>[A-Za-z0-9_-]+)\(\((?P<label>[^\"\(\)\n][^\(\)\n]*)\)\)",
+        lambda m: m.group("prefix") + m.group("id") + "((\"" + m.group("label") + "\"))",
+        code, flags=re.MULTILINE
+    )
+    
+    # Database shape: A[(text)] -> A[("text")]
+    code = re.sub(
+        PREFIX + r"(?P<id>[A-Za-z0-9_-]+)\[\((?P<label>[^\"\[\]\(\)\n][^\[\]\(\)\n]*)\)\]",
+        lambda m: m.group("prefix") + m.group("id") + "[(\"" + m.group("label") + "\")]",
+        code, flags=re.MULTILINE
+    )
+    
+    # Round rectangle: A(text) -> A("text")
+    # Must exclude label starting with double quote, bracket, or paren to prevent matching nested stadium/circle shapes
+    code = re.sub(
+        PREFIX + r"(?P<id>[A-Za-z0-9_-]+)\((?P<label>[^\"\[\(\n][^\(\)\n]*)\)",
+        lambda m: m.group("prefix") + m.group("id") + "(\"" + m.group("label") + "\")",
+        code, flags=re.MULTILINE
+    )
+    
+    # Rectangle shape: A[text] -> A["text"]
+    # Must exclude label starting with double quote, bracket, or paren to prevent matching nested database/stadium/etc.
+    code = re.sub(
+        PREFIX + r"(?P<id>[A-Za-z0-9_-]+)\[(?P<label>[^\"\[\(\n][^\[\]\n]*)\]",
+        lambda m: m.group("prefix") + m.group("id") + "[\"" + m.group("label") + "\"]",
+        code, flags=re.MULTILINE
+    )
+    
+    return code
+
+
 def normalize_steps_from_json(raw_steps) -> List[Dict[str, str]]:
     normalized = []
     valid_types = {"START", "PROCESS", "LOOP", "DECISION", "YES", "NO", "END"}
@@ -355,7 +429,7 @@ def generate_flowchart():
         raw_steps = data.get("steps", [])
         steps = normalize_steps_from_json(raw_steps)
         ascii_chart = renderAsciiFlowchart(steps)
-        mermaid_code = data.get("mermaid", "")
+        mermaid_code = sanitize_mermaid_code(data.get("mermaid", ""))
     except RuntimeError as exc:
         return jsonify({"error": str(exc)}), 500
     except ValueError as exc:
