@@ -1,5 +1,7 @@
 import os
 import re
+import hashlib
+import json
 from typing import List, Dict
 
 from flask import Flask, jsonify, render_template, request
@@ -21,25 +23,23 @@ CONTROL_KEYWORD_PATTERN = re.compile(r"(START|PROCESS:|LOOP:|DECISION:|YES ->|NO
 GEMINI_PROMPT_TEMPLATE = """You are a software analysis assistant.
 
 Task:
-Extract the control flow of the given code.
+Analyze the control flow of the given source code and return a structured JSON object representing the flowchart.
+
+Your output MUST be a valid JSON object matching the following structure:
+{{
+  "mermaid": "A string representing the flowchart in Mermaid.js syntax using 'graph TD'. Make the diagram clean, clear, and logical. Use proper shapes: round rectangles ([]) for Start/End, rectangles ([]) for standard processes, diamonds ({{}}) for conditions/decisions. Add clear labels like '-- Yes -->' or '-- No -->' to the arrows.",
+  "steps": [
+    {{
+      "type": "START | PROCESS | LOOP | DECISION | YES | NO | END",
+      "text": "Description of the step"
+    }}
+  ]
+}}
 
 STRICT RULES:
-- Output ONLY control-flow steps.
-- Use ONLY the keywords listed below.
-- Do NOT draw any flowchart.
-- Do NOT use ASCII art.
-- Do NOT explain anything.
-
-OUTPUT FORMAT:
-Each step MUST start with one of these keywords:
-
-START
-PROCESS:
-LOOP:
-DECISION:
-YES ->
-NO ->
-END
+- Output ONLY the raw JSON object. Do not include markdown code block wrappers (like ```json).
+- Construct the Mermaid.js graph with correct nodes and links. Make sure all branches and loops are correctly linked back to their parent decisions or loop starts to prevent linear paths.
+- Ensure the JSON is completely valid and parseable.
 
 CODE:
 <<<
@@ -62,6 +62,7 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1024  # 64KB request limit
 
 _gemini_model = None
+GEMINI_CACHE = {}
 
 
 def get_gemini_model() -> genai.GenerativeModel:
@@ -71,16 +72,23 @@ def get_gemini_model() -> genai.GenerativeModel:
     return _gemini_model
 
 
-def callGemini(user_code: str) -> str:
+def callGemini(user_code: str) -> dict:
     """Call Gemini to extract control-flow logic from user code.
-
-    This function is the ONLY place we use Gemini.
+    Returns a dictionary with 'mermaid' and 'steps' keys.
     """
+    # Hashing for exact in-memory caching to save Gemini quota
+    cache_key = hashlib.sha256(user_code.encode("utf-8")).hexdigest()
+    if cache_key in GEMINI_CACHE:
+        return GEMINI_CACHE[cache_key]
+
     model = get_gemini_model()
     prompt = GEMINI_PROMPT_TEMPLATE.format(USER_CODE=user_code)
 
     try:
-        response = model.generate_content(prompt)
+        response = model.generate_content(
+            prompt,
+            generation_config={"response_mime_type": "application/json"}
+        )
     except Exception as exc:  # noqa: BLE001
         raise RuntimeError(f"Gemini API call failed: {exc}") from exc
 
@@ -97,7 +105,12 @@ def callGemini(user_code: str) -> str:
     if not text:
         raise RuntimeError("Gemini returned an empty response.")
 
-    return text.strip()
+    try:
+        data = json.loads(text.strip())
+        GEMINI_CACHE[cache_key] = data
+        return data
+    except Exception as exc:
+        raise RuntimeError(f"Failed to parse Gemini output as JSON: {exc}. Raw output was: {text}") from exc
 
 
 def normalizeControlFlow(raw_output: str) -> List[Dict[str, str]]:
@@ -307,6 +320,21 @@ def index() -> str:
     return render_template("index.html")
 
 
+def normalize_steps_from_json(raw_steps) -> List[Dict[str, str]]:
+    normalized = []
+    valid_types = {"START", "PROCESS", "LOOP", "DECISION", "YES", "NO", "END"}
+    if not isinstance(raw_steps, list):
+        return normalized
+    for step in raw_steps:
+        if not isinstance(step, dict):
+            continue
+        step_type = str(step.get("type", "")).upper().strip()
+        step_text = str(step.get("text", "")).strip()
+        if step_type in valid_types:
+            normalized.append({"type": step_type, "text": step_text})
+    return normalized
+
+
 @app.route("/api/flowchart", methods=["POST"])
 def generate_flowchart():
     if not request.is_json:
@@ -322,9 +350,11 @@ def generate_flowchart():
         return jsonify({"error": f"Code is too long. Maximum {MAX_CODE_CHARS} characters allowed."}), 400
 
     try:
-        raw_output = callGemini(code)
-        steps = normalizeControlFlow(raw_output)
+        data = callGemini(code)
+        raw_steps = data.get("steps", [])
+        steps = normalize_steps_from_json(raw_steps)
         ascii_chart = renderAsciiFlowchart(steps)
+        mermaid_code = data.get("mermaid", "")
     except RuntimeError as exc:
         return jsonify({"error": str(exc)}), 500
     except ValueError as exc:
@@ -332,6 +362,7 @@ def generate_flowchart():
 
     return jsonify({
         "ascii": ascii_chart,
+        "mermaid": mermaid_code,
         "steps": steps,
     })
 

@@ -3,19 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Code2Flow - ASCII Flowchart Generator</title>
+    <title>Code2Flow - Interactive AI Flowchart Generator</title>
+    <meta name="description" content="Generate beautiful, interactive Mermaid.js and ASCII flowcharts from source code using Gemini AI." />
     <link rel="stylesheet" href="/static/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'dark',
+        securityLevel: 'loose',
+        flowchart: {
+          useMaxWidth: false,
+          htmlLabels: true
+        }
+      });
+      window.mermaid = mermaid;
+    </script>
   </head>
   <body>
     <header class="header">
-      <h1>Code2Flow</h1>
-      <p class="tagline">Convert source code into deterministic ASCII flowcharts.</p>
+      <div class="header-logo-group">
+        <div class="header-glowing-dot"></div>
+        <h1>Code2Flow</h1>
+      </div>
+      <p class="tagline">Convert source code into interactive visual & ASCII control-flow diagrams instantly.</p>
     </header>
 
     <main class="main">
       <section class="panel input-panel">
         <h2>Source Code</h2>
-        <textarea id="code-input" placeholder="Paste your code here..." spellcheck="false"></textarea>
+        <textarea id="code-input" placeholder="Paste your code here (e.g. Python, JS, C++)..." spellcheck="false"></textarea>
         <div class="controls">
           <button id="generate-btn">Generate Flowchart</button>
           <span id="status" class="status"></span>
@@ -24,22 +44,44 @@
       </section>
 
       <section class="panel output-panel">
-        <h2>ASCII Flowchart</h2>
-        <pre id="ascii-output" class="ascii-output"></pre>
-
-        <div class="steps-toggle-row">
-          <button id="toggle-steps-btn" type="button">Show normalized steps</button>
+        <div class="tabs-header">
+          <button class="tab-btn active" data-tab="visual">📊 Visual Diagram</button>
+          <button class="tab-btn" data-tab="ascii">⌨️ ASCII Diagram</button>
+          <button class="tab-btn" data-tab="steps">📋 Steps List</button>
         </div>
 
-        <section id="steps-section" class="steps-section hidden">
-          <h3>Normalized Steps</h3>
-          <pre id="steps-output" class="steps-output"></pre>
-        </section>
+        <div class="tabs-content">
+          <!-- Visual Tab -->
+          <div id="tab-visual" class="tab-content active">
+            <div class="actions-row">
+              <button id="copy-mermaid-btn" class="action-btn" disabled>Copy Mermaid Code</button>
+              <button id="download-svg-btn" class="action-btn" disabled>Download SVG</button>
+            </div>
+            <div class="mermaid-viewport">
+              <div id="mermaid-container">
+                <div class="empty-state">
+                  <div class="empty-state-icon">📊</div>
+                  <p>Your interactive visual flowchart will render here.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ASCII Tab -->
+          <div id="tab-ascii" class="tab-content">
+            <pre id="ascii-output" class="ascii-output"><div class="empty-state"><div class="empty-state-icon">⌨️</div><p>ASCII flowchart will render here.</p></div></pre>
+          </div>
+
+          <!-- Steps Tab -->
+          <div id="tab-steps" class="tab-content">
+            <pre id="steps-output" class="steps-output"><div class="empty-state"><div class="empty-state-icon">📋</div><p>Normalized steps will render here.</p></div></pre>
+          </div>
+        </div>
       </section>
     </main>
 
     <footer class="footer">
-      <span>Code2Flow &mdash; AI-assisted control-flow extraction, deterministic ASCII rendering.</span>
+      <span>Code2Flow &mdash; Powered by Gemini 2.5 &amp; Mermaid.js. Seamless developer-focused control flow visualization.</span>
     </footer>
 
     <script src="/static/app.js"></script>
