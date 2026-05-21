@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code2Flow - ASCII Flowchart Generator</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>Code2Flow</h1>
+      <p class="tagline">Convert source code into deterministic ASCII flowcharts.</p>
+    </header>
+
+    <main class="main">
+      <section class="panel input-panel">
+        <h2>Source Code</h2>
+        <textarea id="code-input" placeholder="Paste your code here..." spellcheck="false"></textarea>
+        <div class="controls">
+          <button id="generate-btn">Generate Flowchart</button>
+          <span id="status" class="status"></span>
+        </div>
+        <p class="note">Input is limited to 4000 characters to ensure stability.</p>
+      </section>
+
+      <section class="panel output-panel">
+        <h2>ASCII Flowchart</h2>
+        <pre id="ascii-output" class="ascii-output"></pre>
+
+        <div class="steps-toggle-row">
+          <button id="toggle-steps-btn" type="button">Show normalized steps</button>
+        </div>
+
+        <section id="steps-section" class="steps-section hidden">
+          <h3>Normalized Steps</h3>
+          <pre id="steps-output" class="steps-output"></pre>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Code2Flow &mdash; AI-assisted control-flow extraction, deterministic ASCII rendering.</span>
+    </footer>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
